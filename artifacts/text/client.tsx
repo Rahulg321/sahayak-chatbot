@@ -96,6 +96,7 @@ export const textArtifact = new Artifact<'text', TextArtifactMetadata>({
   },
   actions: [
     {
+
       icon: <ClockRewind size={18} />,
       description: 'View changes',
       onClick: ({ handleVersionChange }) => {
