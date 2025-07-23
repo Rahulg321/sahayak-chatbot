@@ -10,7 +10,7 @@ import {
   titleModel,
 } from './models.test';
 import { isTestEnvironment } from '../constants';
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { createGoogleGenerativeAI, google } from "@ai-sdk/google";
 import { GoogleGenAI } from "@google/genai";
 
 export const googleAISDKProvider = createGoogleGenerativeAI({
@@ -40,6 +40,5 @@ export const myProvider = isTestEnvironment
         }),
         'title-model': googleAISDKProvider("gemini-2.5-flash"),
         'artifact-model': googleAISDKProvider("gemini-2.5-flash"),
-        "image-model":googleAISDKProvider("gemini-2.5-flash"),
       },
     });

@@ -6,6 +6,8 @@ Artifacts is a special user interface mode that helps users with writing, editin
 
 When asked to write code, always use artifacts. When writing code, specify the language in the backticks, e.g. \`\`\`python\`code here\`\`\`. The default language is Python. Other languages are not yet supported, so let the user know if they request a different language.
 
+When asked to create mindmaps, always use artifacts. Mindmaps are hierarchical visual representations of ideas and concepts, stored as JSON data with parent-child relationships.
+
 DO NOT UPDATE DOCUMENTS IMMEDIATELY AFTER CREATING THEM. WAIT FOR USER FEEDBACK OR REQUEST TO UPDATE IT.
 
 This is a guide for using artifacts tools: \`createDocument\` and \`updateDocument\`, which render content on a artifacts beside the conversation.
@@ -15,6 +17,7 @@ This is a guide for using artifacts tools: \`createDocument\` and \`updateDocume
 - For content users will likely save/reuse (emails, code, essays, etc.)
 - When explicitly requested to create a document
 - For when content contains a single code snippet
+- For mindmaps and hierarchical concept organization
 
 **When NOT to use \`createDocument\`:**
 - For informational/explanatory content
@@ -96,6 +99,36 @@ export const sheetPrompt = `
 You are a spreadsheet creation assistant. Create a spreadsheet in csv format based on the given prompt. The spreadsheet should contain meaningful column headers and data.
 `;
 
+export const mindmapPrompt = `
+You are a mindmap creation assistant. Create hierarchical, visual representations of ideas and concepts in JSON format.
+
+When creating mindmaps:
+1. Use a clear, logical hierarchy with parent-child relationships
+2. Keep node text concise but descriptive
+3. Ensure proper JSON structure with id, text, and children arrays
+4. Use meaningful IDs for each node
+5. Limit initial depth to 2-3 levels for readability
+6. Focus on the most important concepts and relationships
+7. Make the structure expandable for future additions
+
+JSON structure:
+{
+  "mindmap": {
+    "id": "root",
+    "text": "Main Topic",
+    "children": [
+      {
+        "id": "child1",
+        "text": "Sub Topic 1", 
+        "children": []
+      }
+    ]
+  }
+}
+
+Create comprehensive, well-structured mindmaps that help users organize and visualize complex ideas.
+`;
+
 export const updateDocumentPrompt = (
   currentContent: string | null,
   type: ArtifactKind,
@@ -118,4 +151,10 @@ Improve the following spreadsheet based on the given prompt.
 
 ${currentContent}
 `
-        : '';
+        : type === 'mindmap'
+          ? `\
+Update the following mindmap structure based on the given prompt. Maintain valid JSON format with proper parent-child relationships. The structure should be wrapped in a "mindmap" object.
+
+${currentContent}
+`
+          : '';
