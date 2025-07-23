@@ -219,9 +219,12 @@ export async function POST(request: Request) {
       return new Response(stream.pipeThrough(new JsonToSseTransformStream()));
     }
   } catch (error) {
+    console.log(error);
+
     if (error instanceof ChatSDKError) {
       return error.toResponse();
     }
+    return new ChatSDKError('bad_request:api').toResponse();
   }
 }
 

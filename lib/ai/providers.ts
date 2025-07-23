@@ -3,7 +3,6 @@ import {
   extractReasoningMiddleware,
   wrapLanguageModel,
 } from 'ai';
-import { xai } from '@ai-sdk/xai';
 import {
   artifactModel,
   chatModel,
@@ -11,6 +10,17 @@ import {
   titleModel,
 } from './models.test';
 import { isTestEnvironment } from '../constants';
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { GoogleGenAI } from "@google/genai";
+
+export const googleAISDKProvider = createGoogleGenerativeAI({
+  apiKey: process.env.GOOGLE_GEMINI_AI_KEY,
+});
+
+export const googleGenAIProvider = new GoogleGenAI({
+  apiKey: process.env.GOOGLE_GEMINI_AI_KEY,
+});
+
 
 export const myProvider = isTestEnvironment
   ? customProvider({
@@ -23,15 +33,13 @@ export const myProvider = isTestEnvironment
     })
   : customProvider({
       languageModels: {
-        'chat-model': xai('grok-2-vision-1212'),
+        'chat-model': googleAISDKProvider("gemini-2.5-flash"),
         'chat-model-reasoning': wrapLanguageModel({
-          model: xai('grok-3-mini-beta'),
+          model: googleAISDKProvider("gemini-2.5-pro-001"),
           middleware: extractReasoningMiddleware({ tagName: 'think' }),
         }),
-        'title-model': xai('grok-2-1212'),
-        'artifact-model': xai('grok-2-1212'),
-      },
-      imageModels: {
-        'small-model': xai.imageModel('grok-2-image'),
+        'title-model': googleAISDKProvider("gemini-2.5-flash"),
+        'artifact-model': googleAISDKProvider("gemini-2.5-flash"),
+        "image-model":googleAISDKProvider("gemini-2.5-flash"),
       },
     });
