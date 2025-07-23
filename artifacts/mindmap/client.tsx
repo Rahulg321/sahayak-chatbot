@@ -19,8 +19,6 @@ interface MindmapArtifactMetadata {
 // Simple mindmap visualization component
 const MindmapVisualizer = ({ content }: { content: string }) => {
   let mindmapData;
-  
-
 
   try {
     if (content?.trim()) mindmapData = JSON.parse(content);
@@ -30,29 +28,42 @@ const MindmapVisualizer = ({ content }: { content: string }) => {
     // render fallback…
   } 
 
- console.log("mindmapData", mindmapData) 
+  console.log("mindmapData", mindmapData) 
 
-
-const renderNode = (node: any, level: number = 0) => (
-      <div key={node.id} className="ml-4">
-        <div className={`p-2 rounded border ${level === 0 ? 'bg-blue-100' : 'bg-gray-50'}`}>
-          {node.text}
+  const renderNode = (node: any, level: number = 0) => (
+    <div key={node.id} className="mb-2">
+      <div className={`p-2 rounded-lg border-2 text-sm font-medium ${
+        level === 0 
+          ? 'bg-primary/10 border-primary/30 text-primary' 
+          : level === 1 
+            ? 'bg-secondary/10 border-secondary/30 text-secondary-foreground'
+            : 'bg-muted border-border text-foreground'
+      }`}>
+        {node.text}
+      </div>
+      {node.children && node.children.length > 0 && (
+        <div className="ml-6 mt-2 pl-4 border-l-2 border-border">
+          {node.children.map((child: any) => renderNode(child, level + 1))}
         </div>
-        {node.children && node.children.length > 0 && (
-          <div className="ml-4 mt-2">
-            {node.children.map((child: any) => renderNode(child, level + 1))}
-          </div>
-        )}
-      </div>
-    );
+      )}
+    </div>
+  );
 
-    return (
-      <div className="p-4">
-        <h3 className="text-lg font-semibold mb-4">Mindmap Visualization</h3>
-        {mindmapData ? renderNode(mindmapData) : <p>Invalid mindmap data</p>}
-      </div>
-    );
-  
+  // Always render something, even if data is invalid
+  return (
+    <div className="p-4">
+      <h3 className="text-lg font-semibold mb-4 text-foreground ">Mindmap Visualization</h3>
+      {mindmapData ? (
+        <div className="flex-1">
+          {renderNode(mindmapData)}
+        </div>
+      ) : (
+        <div className="flex-1 text-sm text-muted-foreground p-6 border-2 border-dashed border-border rounded-lg bg-muted flex items-center justify-center">
+          {content ? 'Loading mindmap...' : 'No mindmap data available'}
+        </div>
+      )}
+    </div>
+  );
 };
 
 export const mindmapArtifact = new Artifact<'mindmap', MindmapArtifactMetadata>({
@@ -122,8 +133,8 @@ export const mindmapArtifact = new Artifact<'mindmap', MindmapArtifactMetadata>(
     }
 
     return (
-      <div className="flex flex-row py-8 md:p-20 px-4">
-        <div className="flex-1">
+      <div className="h-full overflow-y-auto">
+        <div className="">
           <MindmapVisualizer content={content} />
         </div>
 

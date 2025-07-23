@@ -22,6 +22,51 @@ import equal from 'fast-deep-equal';
 import { SpreadsheetEditor } from './sheet-editor';
 import { ImageEditor } from './image-editor';
 
+// Simple mindmap preview component
+const MindmapPreview = ({ content }: { content: string }) => {
+  let mindmapData;
+
+  try {
+    if (content?.trim()) mindmapData = JSON.parse(content);
+    else throw new Error('Empty mindmap content');
+  } catch (e) {
+    console.error(e);
+  }
+
+  const renderNode = (node: any, level: number = 0) => (
+    <div key={node.id} className="mb-1">
+      <div className={`p-1 rounded border text-xs font-medium ${
+        level === 0 
+          ? 'bg-primary/10 border-primary/30 text-primary' 
+          : level === 1 
+            ? 'bg-secondary/10 border-secondary/30 text-secondary-foreground'
+            : 'bg-muted border-border text-foreground'
+      }`}>
+        {node.text}
+      </div>
+      {node.children && node.children.length > 0 && (
+        <div className="ml-3 mt-1 pl-2 border-l border-border">
+          {node.children.map((child: any) => renderNode(child, level + 1))}
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="p-2 h-full">
+      {mindmapData ? (
+        <div>
+          {renderNode(mindmapData)}
+        </div>
+      ) : (
+        <div className="text-xs text-muted-foreground p-3 border border-dashed border-border rounded bg-muted">
+          {content ? 'Loading mindmap...' : 'No mindmap data available'}
+        </div>
+      )}
+    </div>
+  );
+};
+
 interface DocumentPreviewProps {
   isReadonly: boolean;
   result?: any;
@@ -133,6 +178,10 @@ const LoadingSkeleton = ({ artifactKind }: { artifactKind: ArtifactKind }) => (
       <div className="overflow-y-scroll border rounded-b-2xl bg-muted border-t-0 dark:border-zinc-700">
         <div className="animate-pulse h-[257px] bg-muted-foreground/20 w-full" />
       </div>
+    ) : artifactKind === 'mindmap' ? (
+      <div className="overflow-y-scroll border rounded-b-2xl p-2 bg-muted border-t-0 dark:border-zinc-700">
+        <div className="animate-pulse h-[257px] bg-muted-foreground/20 w-full rounded" />
+      </div>
     ) : (
       <div className="overflow-y-scroll border rounded-b-2xl p-8 pt-4 bg-muted border-t-0 dark:border-zinc-700">
         <InlineDocumentSkeleton />
@@ -242,6 +291,7 @@ const DocumentContent = ({ document }: { document: Document }) => {
     {
       'p-4 sm:px-14 sm:py-16': document.kind === 'text',
       'p-0': document.kind === 'code',
+      'p-2': document.kind === 'mindmap',
     },
   );
 
@@ -279,6 +329,8 @@ const DocumentContent = ({ document }: { document: Document }) => {
           status={artifact.status}
           isInline={true}
         />
+      ) : document.kind === 'mindmap' ? (
+        <MindmapPreview content={document.content ?? ''} />
       ) : null}
     </div>
   );
