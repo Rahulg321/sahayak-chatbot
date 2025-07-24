@@ -14,6 +14,9 @@ export default async function Page() {
     redirect('/api/auth/guest');
   }
 
+ console.log(session) 
+
+
   const id = generateUUID();
 
   const cookieStore = await cookies();

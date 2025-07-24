@@ -53,7 +53,7 @@ export function SidebarUserNav({ user }: { user: User }) {
                 className="data-[state=open]:bg-sidebar-accent bg-background data-[state=open]:text-sidebar-accent-foreground h-10"
               >
                 <Image
-                  src={`https://avatar.vercel.sh/${user.email}`}
+                  src={data?.user.image ?? `https://avatar.vercel.sh/${user.email}`}
                   alt={user.email ?? 'User Avatar'}
                   width={24}
                   height={24}
@@ -94,16 +94,14 @@ export function SidebarUserNav({ user }: { user: User }) {
                     return;
                   }
 
-                  if (isGuest) {
-                    router.push('/login');
-                  } else {
-                    signOut({
-                      redirectTo: '/',
-                    });
-                  }
+                  console.log("signing out")
+
+                  signOut({
+                    redirectTo: '/',
+                  });
                 }}
               >
-                {isGuest ? 'Login to your account' : 'Sign out'}
+                { 'Sign out'}
               </button>
             </DropdownMenuItem>
           </DropdownMenuContent>

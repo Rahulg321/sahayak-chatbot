@@ -27,6 +27,8 @@ import {
   type DBMessage,
   type Chat,
   stream,
+  passwordResetToken,
+  verificationToken,
 } from './schema';
 import type { ArtifactKind } from '@/components/artifact';
 import { generateUUID } from '../utils';
@@ -36,8 +38,24 @@ import { ChatSDKError } from '../errors';
 
 // biome-ignore lint: Forbidden non-null assertion.
 const client = postgres(process.env.POSTGRES_URL!);
-const db = drizzle(client);
+export const db = drizzle(client);
 
+
+
+/**
+ * Get a user by id
+ * @param id - The id of the user
+ * @returns The user
+ */
+export async function getUserById(id: string) {
+  try {
+    const [foundUser] = await db.select().from(user).where(eq(user.id, id));
+    return foundUser;
+  } catch (error) {
+    console.log("An error occured trying to get user by id", error);
+    return null;
+  }
+}
 
 
 export async function getUser(email: string): Promise<Array<User>> {
@@ -60,6 +78,100 @@ export async function createUser(email: string, password: string) {
     throw new ChatSDKError('bad_request:database', 'Failed to create user');
   }
 }
+
+
+
+/**
+ * Get a password reset token by email
+ * @param email - The email to get the password reset token for
+ * @returns The password reset token
+ */
+export async function getPasswordResetTokenByEmail(email: string) {
+  try {
+    const [foundPasswordResetToken] = await db
+      .select()
+      .from(passwordResetToken)
+      .where(eq(passwordResetToken.email, email));
+    return foundPasswordResetToken;
+  } catch (error) {
+    console.log(
+      "An error occured trying to get password reset token by email",
+      error
+    );
+    return null;
+  }
+}
+
+/**
+ * Get a password reset token by token
+ * @param token - The token to get the password reset token for
+ * @returns The password reset token
+ */
+export async function getPasswordResetTokenByToken(token: string) {
+  try {
+    const [foundPasswordResetToken] = await db
+      .select()
+      .from(passwordResetToken)
+      .where(eq(passwordResetToken.token, token));
+
+    return foundPasswordResetToken;
+  } catch (error) {
+    console.log(
+      "An error occured trying to get password reset token by token",
+      error
+    );
+    return null;
+  }
+}
+
+/**
+ * Get a verification token by token
+ * @param token - The token to get the verification token for
+ * @returns The verification token
+ */
+export async function getVerificationTokenByToken(token: string) {
+  try {
+    const [foundVerificationToken] = await db
+      .select()
+      .from(verificationToken)
+      .where(eq(verificationToken.token, token));
+    return foundVerificationToken;
+  } catch (error) {
+    console.log(
+      "An error occured trying to get verification token by token",
+      error
+    );
+    return null;
+  }
+}
+
+
+
+
+/**
+ * Get a verification token by email
+ * @param email - The email to get the verification token for
+ * @returns The verification token
+ */
+export const getVerificationTokenByEmail = async (email: string) => {
+  try {
+    const [userVerificationToken] = await db
+      .select()
+      .from(verificationToken)
+      .where(eq(verificationToken.email, email));
+    return userVerificationToken;
+  } catch (error) {
+    console.log(
+      "An error occured trying to get verification token by email",
+      error
+    );
+    return null;
+  }
+};
+
+
+
+
 
 export async function createGuestUser() {
   const email = `guest-${Date.now()}`;

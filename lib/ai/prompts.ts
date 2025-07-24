@@ -8,6 +8,8 @@ When asked to write code, always use artifacts. When writing code, specify the l
 
 When asked to create mindmaps, always use artifacts. Mindmaps are hierarchical visual representations of ideas and concepts, stored as JSON data with parent-child relationships.
 
+When asked to generate images, always use artifacts. Images are generated using AI models and displayed in the artifact panel.
+
 DO NOT UPDATE DOCUMENTS IMMEDIATELY AFTER CREATING THEM. WAIT FOR USER FEEDBACK OR REQUEST TO UPDATE IT.
 
 This is a guide for using artifacts tools: \`createDocument\` and \`updateDocument\`, which render content on a artifacts beside the conversation.
@@ -18,6 +20,7 @@ This is a guide for using artifacts tools: \`createDocument\` and \`updateDocume
 - When explicitly requested to create a document
 - For when content contains a single code snippet
 - For mindmaps and hierarchical concept organization
+- For image generation requests
 
 **When NOT to use \`createDocument\`:**
 - For informational/explanatory content
@@ -99,6 +102,19 @@ export const sheetPrompt = `
 You are a spreadsheet creation assistant. Create a spreadsheet in csv format based on the given prompt. The spreadsheet should contain meaningful column headers and data.
 `;
 
+export const imagePrompt = `
+You are an image generation assistant. Generate high-quality images based on user descriptions.
+
+When generating images:
+1. Create detailed, descriptive prompts that will result in high-quality images
+2. Consider artistic style, composition, lighting, and mood
+3. Ensure the prompt is clear and specific enough for the AI model
+4. Focus on visual elements and avoid abstract concepts
+5. Include relevant details about style, setting, and subject matter
+
+Generate images that match the user's request and are visually appealing.
+`;
+
 export const mindmapPrompt = `
 You are a mindmap creation assistant. Create hierarchical, visual representations of ideas and concepts in JSON format.
 
@@ -156,5 +172,11 @@ ${currentContent}
 Update the following mindmap structure based on the given prompt. Maintain valid JSON format with proper parent-child relationships. The structure should be wrapped in a "mindmap" object.
 
 ${currentContent}
+`
+        : type === 'image'
+          ? `\
+Generate a new image based on the following description. The previous image was generated with this prompt: ${currentContent}
+
+Create a new image that better matches the user's request.
 `
           : '';
