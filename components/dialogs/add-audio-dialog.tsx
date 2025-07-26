@@ -40,7 +40,13 @@ import { toast } from "sonner";
 import axios from "axios";
 import { newAudioFormSchema } from "@/lib/schemas/audio-resource-schema";
 
-const AddAudioDialog = ({ subjectId }: { subjectId: string }) => {
+const AddAudioDialog = ({
+  subjectId,
+  gradeId,
+}: {
+  subjectId: string;
+  gradeId: string;
+}) => {
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
 
@@ -60,8 +66,9 @@ const AddAudioDialog = ({ subjectId }: { subjectId: string }) => {
         formData.append("name", values.name);
         formData.append("description", values.description);
         formData.append("subjectId", subjectId);
+        formData.append("gradeId", gradeId);
 
-        const response = await fetch(`/api/audio-resource`, {
+        const response = await fetch(`/api/add-audio-resource`, {
           method: "POST",
           body: formData,
         });

@@ -85,6 +85,9 @@ export const generateEmbeddings = async (
   const response = await googleGenAIProvider.models.embedContent({
     model: "gemini-embedding-001",
     contents: chunks,
+    config: {
+      outputDimensionality: 1536,
+    },
   });
 
   const embeddings = response.embeddings?.map((e) => e.values);
@@ -125,13 +128,19 @@ export const generateEmbeddingsFromChunks = async (
 
   let allEmbeddings: Array<{ embedding: number[]; content: string }> = [];
   for (const batch of batches) {
-    const { embeddings } = await embedMany({
-      model: google.textEmbeddingModel("text-embedding-004"),
-      values: batch,
+    const response = await googleGenAIProvider.models.embedContent({
+      model: "gemini-embedding-001",
+      contents: batch,
+      config: {
+        outputDimensionality: 1536,
+      },
     });
 
     allEmbeddings = allEmbeddings.concat(
-      embeddings.map((e, i) => ({ content: batch[i], embedding: e }))
+      response?.embeddings?.map((e, i) => ({
+        embedding: e.values ?? [],
+        content: batch[i],
+      })) ?? []
     );
   }
   encoder.free();

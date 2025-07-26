@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
   const name = formData.get("name") as string;
   const description = formData.get("description") as string;
   const subjectId = formData.get("subjectId") as string;
+  const gradeId = formData.get("gradeId") as string;
 
   if (!subjectId) {
     return NextResponse.json(
@@ -103,6 +104,7 @@ export async function POST(req: NextRequest) {
     console.log("generating embeddings from chunks");
     const embeddings = await generateEmbeddingsFromChunks(embeddingInput);
 
+    console.log("creating a resource");
     const [resource] = await db
       .insert(resources)
       .values({
@@ -127,6 +129,8 @@ export async function POST(req: NextRequest) {
     console.log("embeddings created", embeddings);
 
     console.log("Resource and embeddings were created successfully!!!");
+
+    revalidatePath(`/grades/${gradeId}/${subjectId}`);
 
     return NextResponse.json({ content }, { status: 200 });
   } catch (error) {

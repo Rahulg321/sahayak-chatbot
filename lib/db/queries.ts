@@ -31,6 +31,7 @@ import {
   verificationToken,
   grades,
   subjects,
+  resources,
 } from "./schema";
 import type { ArtifactKind } from "@/components/artifact";
 import { generateUUID } from "../utils";
@@ -41,6 +42,28 @@ import { ChatSDKError } from "../errors";
 // biome-ignore lint: Forbidden non-null assertion.
 const client = postgres(process.env.POSTGRES_URL!);
 export const db = drizzle(client);
+
+export async function getAllSubjectResources(subjectId: string) {
+  try {
+    const fetchedResources = await db
+      .select({
+        id: resources.id,
+        name: resources.name,
+        kind: resources.kind,
+        createdAt: resources.createdAt,
+        updatedAt: resources.updatedAt,
+      })
+      .from(resources)
+      .where(eq(resources.subjectId, subjectId))
+      .orderBy(desc(resources.createdAt))
+      .execute();
+
+    return fetchedResources;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
 
 export async function getSubjectById(subjectId: string) {
   try {

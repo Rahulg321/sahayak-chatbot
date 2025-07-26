@@ -38,8 +38,12 @@ import {
 } from "lucide-react";
 
 import AddSubjectDialog from "@/components/dialogs/AddSubjectDialog";
-import React from "react";
-import { getGradeById, getSubjectById } from "@/lib/db/queries";
+import React, { Suspense } from "react";
+import {
+  getAllSubjectResources,
+  getGradeById,
+  getSubjectById,
+} from "@/lib/db/queries";
 import AddAudioDialog from "@/components/dialogs/add-audio-dialog";
 import AddDocumentDialog from "@/components/dialogs/add-document-dialog";
 import { auth } from "@/app/(auth)/auth";
@@ -145,7 +149,12 @@ const page = async ({
 
           <TabsContent value="curriculum" className="mt-6">
             <Card>
-              <CardHeader></CardHeader>
+              <CardHeader>
+                <CardTitle>Curriculum</CardTitle>
+                <CardDescription>
+                  View and manage the curriculum for this subject.
+                </CardDescription>
+              </CardHeader>
               <CardContent className="space-y-4"></CardContent>
             </Card>
           </TabsContent>
@@ -174,7 +183,7 @@ const page = async ({
                   </CardDescription>
                 </div>
                 <div>
-                  <AddAudioDialog subjectId={subjectId} />
+                  <AddAudioDialog subjectId={subjectId} gradeId={gradeId} />
                   <AddDocumentDialog
                     userSession={userSession}
                     subjectId={subjectId}
@@ -182,7 +191,9 @@ const page = async ({
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3"></div>
+                <Suspense fallback={<div>Loading......</div>}>
+                  <FetchingSubjectResources subjectId={subjectId} />
+                </Suspense>
               </CardContent>
             </Card>
           </TabsContent>
@@ -199,24 +210,26 @@ const page = async ({
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button>
-                      <PlusCircle className="mr-2 h-4 w-4" />
+                      <PlusCircle className="mr-2 size-4" />
                       Add Note
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem>
-                      <FileText className="mr-2 h-4 w-4" />
+                      <FileText className="mr-2 size-4" />
                       <span>Add Text Note</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      <Mic className="mr-2 h-4 w-4" />
+                      <Mic className="mr-2 size-4" />
                       <span>Add Voice Note</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
+                <Suspense>
+                  <FetchingSubjectNotes />
+                </Suspense>
               </CardContent>
             </Card>
           </TabsContent>
@@ -226,3 +239,38 @@ const page = async ({
   );
 };
 export default page;
+
+const FetchingSubjectResources = async ({
+  subjectId,
+}: {
+  subjectId: string;
+}) => {
+  const userSubjectResources = await getAllSubjectResources(subjectId);
+
+  if (!userSubjectResources) {
+    return (
+      <div>
+        <h3>No Resources Found</h3>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div>
+        {userSubjectResources.map((e) => {
+          return (
+            <div key={e.id}>
+              <h4>{e.name}</h4>
+              <p>{e.kind}</p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const FetchingSubjectNotes = () => {
+  return <div>FetchingSubjectNotes</div>;
+};
