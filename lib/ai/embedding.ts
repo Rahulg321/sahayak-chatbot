@@ -155,11 +155,19 @@ export const generateEmbeddingsFromChunks = async (
 export const generateEmbedding = async (value: string): Promise<number[]> => {
   console.log("Generating embedding for value:", value);
   const input = value.replaceAll("\\n", " ");
-  const { embedding } = await embed({
-    model: google.textEmbeddingModel("text-embedding-004"),
-    value: input,
-  });
-  return embedding;
+  try {
+    const response = await googleGenAIProvider.models.embedContent({
+      model: "gemini-embedding-001",
+      contents: input,
+      config: {
+        outputDimensionality: 1536,
+      },
+    });
+    return response?.embeddings?.[0]?.values ?? [];
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
 };
 
 export const findRelevantContent = async (userQuery: string) => {

@@ -47,6 +47,7 @@ import {
 import AddAudioDialog from "@/components/dialogs/add-audio-dialog";
 import AddDocumentDialog from "@/components/dialogs/add-document-dialog";
 import { auth } from "@/app/(auth)/auth";
+import ResourceCard from "@/components/resource-card";
 
 const page = async ({
   params,
@@ -192,7 +193,10 @@ const page = async ({
               </CardHeader>
               <CardContent>
                 <Suspense fallback={<div>Loading......</div>}>
-                  <FetchingSubjectResources subjectId={subjectId} />
+                  <FetchingSubjectResources
+                    subjectId={subjectId}
+                    gradeId={gradeId}
+                  />
                 </Suspense>
               </CardContent>
             </Card>
@@ -242,8 +246,10 @@ export default page;
 
 const FetchingSubjectResources = async ({
   subjectId,
+  gradeId,
 }: {
   subjectId: string;
+  gradeId: string;
 }) => {
   const userSubjectResources = await getAllSubjectResources(subjectId);
 
@@ -260,10 +266,15 @@ const FetchingSubjectResources = async ({
       <div>
         {userSubjectResources.map((e) => {
           return (
-            <div key={e.id}>
-              <h4>{e.name}</h4>
-              <p>{e.kind}</p>
-            </div>
+            <ResourceCard
+              key={e.id}
+              resourceId={e.id}
+              resourceName={e.name}
+              resourceKind={e.kind as string}
+              resourceDescription={e.description}
+              gradeId={gradeId}
+              subjectId={subjectId}
+            />
           );
         })}
       </div>

@@ -49,6 +49,7 @@ export async function getAllSubjectResources(subjectId: string) {
       .select({
         id: resources.id,
         name: resources.name,
+        description: resources.description,
         kind: resources.kind,
         createdAt: resources.createdAt,
         updatedAt: resources.updatedAt,

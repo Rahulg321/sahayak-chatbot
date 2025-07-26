@@ -124,9 +124,10 @@ const AddDocumentDialog = ({
         formData.append("name", values.name);
         formData.append("description", values.description);
         formData.append("userId", userSession.user.id);
+        formData.append("subjectId", subjectId);
 
         const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BOTBEE_SERVER_URL}/add-bot-resource`,
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/add-resource`,
           formData,
           {
             headers: {
@@ -151,6 +152,7 @@ const AddDocumentDialog = ({
         setError(null);
         setOpen(false);
       } catch (err) {
+        console.log(err);
         toast.error(
           err instanceof Error
             ? err.message
