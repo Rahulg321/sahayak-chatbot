@@ -22,6 +22,34 @@
       "when": 1753533820338,
       "tag": "0002_fantastic_crystal",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1753543557505,
+      "tag": "0003_lonely_micromax",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1753551017093,
+      "tag": "0004_colorful_the_santerians",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1753551870363,
+      "tag": "0005_right_wallop",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1753561696056,
+      "tag": "0006_bouncy_dagger",
+      "breakpoints": true
     }
   ]
 }

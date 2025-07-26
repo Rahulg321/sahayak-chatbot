@@ -40,6 +40,7 @@ import {
 import AddSubjectDialog from "@/components/dialogs/AddSubjectDialog";
 import React, { Suspense } from "react";
 import {
+  getAllNotesBySubjectId,
   getAllSubjectResources,
   getGradeById,
   getSubjectById,
@@ -48,6 +49,8 @@ import AddAudioDialog from "@/components/dialogs/add-audio-dialog";
 import AddDocumentDialog from "@/components/dialogs/add-document-dialog";
 import { auth } from "@/app/(auth)/auth";
 import ResourceCard from "@/components/resource-card";
+import NoteCard from "@/components/note-card";
+import NoteCardSkeleton from "@/components/skeletons/NoteCardSkeleton";
 
 const page = async ({
   params,
@@ -84,7 +87,7 @@ const page = async ({
   };
 
   return (
-    <div className="narrow-container block-space">
+    <div className="big-container block-space">
       <nav className="mb-4 flex items-center text-sm text-muted-foreground">
         <Link href="/" className="hover:text-primary">
           <Home className="size-4" />
@@ -223,16 +226,30 @@ const page = async ({
                       <FileText className="mr-2 size-4" />
                       <span>Add Text Note</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Mic className="mr-2 size-4" />
-                      <span>Add Voice Note</span>
+                    <DropdownMenuItem asChild>
+                      <Link href={`/grades/${gradeId}/${subjectId}/voice-note`}>
+                        <Mic className="mr-2 size-4" />
+                        <span>Add Voice Note</span>
+                      </Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </CardHeader>
               <CardContent>
-                <Suspense>
-                  <FetchingSubjectNotes />
+                <Suspense
+                  fallback={
+                    <div className="space-y-4">
+                      <NoteCardSkeleton />
+                      <NoteCardSkeleton />
+                      <NoteCardSkeleton />
+                      <NoteCardSkeleton />
+                    </div>
+                  }
+                >
+                  <FetchingSubjectNotes
+                    subjectId={subjectId}
+                    gradeId={gradeId}
+                  />
                 </Suspense>
               </CardContent>
             </Card>
@@ -282,6 +299,37 @@ const FetchingSubjectResources = async ({
   );
 };
 
-const FetchingSubjectNotes = () => {
-  return <div>FetchingSubjectNotes</div>;
+const FetchingSubjectNotes = async ({
+  subjectId,
+  gradeId,
+}: {
+  subjectId: string;
+  gradeId: string;
+}) => {
+  const allNotes = await getAllNotesBySubjectId(subjectId);
+
+  if (!allNotes) {
+    return (
+      <div>
+        <h3>No Notes Found</h3>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div>
+        {allNotes.map((e) => {
+          return (
+            <NoteCard
+              key={e.id}
+              note={e}
+              gradeId={gradeId}
+              subjectId={subjectId}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
 };

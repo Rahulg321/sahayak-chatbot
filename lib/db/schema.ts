@@ -367,10 +367,16 @@ export const notes = pgTable("notes", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
   title: text("title").notNull(),
   content: text("content"),
+  type: varchar("type", {
+    enum: ["text", "voice"],
+  })
+    .notNull()
+    .default("text"),
+
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   subjectId: uuid("subjectId")
-    .references(() => subjects.id)
+    .references(() => subjects.id, { onDelete: "cascade" })
     .notNull(),
   userId: uuid("userId")
     .references(() => user.id)
@@ -378,6 +384,20 @@ export const notes = pgTable("notes", {
 });
 
 export type Notes = InferSelectModel<typeof notes>;
+
+export const audioTracks = pgTable("audio_tracks", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  fileUrl: text("file_url").notNull(),
+
+  noteId: uuid("noteId")
+    .references(() => notes.id, { onDelete: "cascade" })
+    .notNull(),
+  transcription: text("transcription").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export type AudioTracks = InferSelectModel<typeof audioTracks>;
 
 export const resources = pgTable("resources", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
@@ -410,7 +430,7 @@ export const resources = pgTable("resources", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 
   subjectId: uuid("subjectId")
-    .references(() => subjects.id)
+    .references(() => subjects.id, { onDelete: "cascade" })
     .notNull(),
 });
 
@@ -437,3 +457,17 @@ export const embeddings = pgTable(
 );
 
 export type Embedding = InferSelectModel<typeof embeddings>;
+
+export const transformations = pgTable("transformations", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  noteId: uuid("noteId")
+    .references(() => notes.id, { onDelete: "cascade" })
+    .notNull(),
+  typeName: text("type_name").notNull(),
+  text: text("text").notNull(),
+  isGenerating: boolean("is_generating").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export type Transformations = InferSelectModel<typeof transformations>;

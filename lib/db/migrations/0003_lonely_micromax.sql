@@ -1,0 +1,1 @@
+ALTER TABLE "notes" ADD COLUMN "type" varchar DEFAULT 'text' NOT NULL;

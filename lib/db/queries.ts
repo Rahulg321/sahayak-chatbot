@@ -32,6 +32,9 @@ import {
   grades,
   subjects,
   resources,
+  notes,
+  audioTracks,
+  transformations,
 } from "./schema";
 import type { ArtifactKind } from "@/components/artifact";
 import { generateUUID } from "../utils";
@@ -42,6 +45,58 @@ import { ChatSDKError } from "../errors";
 // biome-ignore lint: Forbidden non-null assertion.
 const client = postgres(process.env.POSTGRES_URL!);
 export const db = drizzle(client);
+
+export async function getNoteWithAudioTracks(noteId: string) {
+  try {
+    const [noteWithAudioTracks] = await db
+      .select()
+      .from(notes)
+      .where(eq(notes.id, noteId));
+
+    const [fetchedAudioTracks] = await db
+      .select()
+      .from(audioTracks)
+      .where(eq(audioTracks.noteId, noteId));
+
+    const [fetchedTransformations] = await db
+      .select()
+      .from(transformations)
+      .where(eq(transformations.noteId, noteId));
+
+    return {
+      ...noteWithAudioTracks,
+      audioTracks: fetchedAudioTracks,
+      transformations: fetchedTransformations,
+    };
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
+export const getNoteById = async (noteId: string) => {
+  try {
+    const [note] = await db.select().from(notes).where(eq(notes.id, noteId));
+    return note;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export async function getAllNotesBySubjectId(subjectId: string) {
+  try {
+    const allNotes = await db
+      .select()
+      .from(notes)
+      .where(eq(notes.subjectId, subjectId));
+
+    return allNotes;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
 
 export async function getAllSubjectResources(subjectId: string) {
   try {
