@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -41,12 +41,20 @@ import AddSubjectDialog from "@/components/dialogs/AddSubjectDialog";
 import React from "react";
 import { getGradeById, getSubjectById } from "@/lib/db/queries";
 import AddAudioDialog from "@/components/dialogs/add-audio-dialog";
+import AddDocumentDialog from "@/components/dialogs/add-document-dialog";
+import { auth } from "@/app/(auth)/auth";
 
 const page = async ({
   params,
 }: {
   params: Promise<{ gradeId: string; subjectId: string }>;
 }) => {
+  const userSession = await auth();
+
+  if (!userSession) redirect("/login");
+
+  console.log("user Session", userSession);
+
   const gradeId = (await params).gradeId;
   const subjectId = (await params).subjectId;
 
@@ -167,6 +175,10 @@ const page = async ({
                 </div>
                 <div>
                   <AddAudioDialog subjectId={subjectId} />
+                  <AddDocumentDialog
+                    userSession={userSession}
+                    subjectId={subjectId}
+                  />
                 </div>
               </CardHeader>
               <CardContent>

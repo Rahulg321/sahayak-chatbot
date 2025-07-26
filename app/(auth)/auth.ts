@@ -1,27 +1,26 @@
-import { compare } from 'bcrypt-ts';
-import NextAuth, { type DefaultSession } from 'next-auth';
+import { compare } from "bcrypt-ts";
+import NextAuth, { type DefaultSession } from "next-auth";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
-import Credentials from 'next-auth/providers/credentials';
-import { createGuestUser, db, getUser, getUserById } from '@/lib/db/queries';
-import { authConfig } from './auth.config';
-import type { DefaultJWT } from 'next-auth/jwt';
+import Credentials from "next-auth/providers/credentials";
+import { createGuestUser, db, getUser, getUserById } from "@/lib/db/queries";
+import { authConfig } from "./auth.config";
+import type { DefaultJWT } from "next-auth/jwt";
 import { sessions, accounts, user, user as userTable } from "@/lib/db/schema";
-import { eq } from 'drizzle-orm';
+import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { sign } from "jsonwebtoken";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 
+export type UserType = "guest" | "regular";
 
-export type UserType = 'guest' | 'regular';
-
-declare module 'next-auth' {
+declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
       type: UserType;
       accessToken?: string;
-    } & DefaultSession['user'];
+    } & DefaultSession["user"];
   }
 
   interface User {
@@ -32,7 +31,7 @@ declare module 'next-auth' {
   }
 }
 
-declare module 'next-auth/jwt' {
+declare module "next-auth/jwt" {
   interface JWT extends DefaultJWT {
     id: string;
     type: UserType;
@@ -45,7 +44,7 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
-//@ts-ignore 
+  //@ts-ignore
   adapter: DrizzleAdapter(db, {
     usersTable: user,
     accountsTable: accounts,
@@ -95,15 +94,17 @@ export const {
             .update(userTable)
             .set({ emailVerified: new Date() })
             .where(eq(userTable.id, user.id));
-          
-          console.log(`Email verified for user ${user.email} via ${account?.provider}`);
+
+          console.log(
+            `Email verified for user ${user.email} via ${account?.provider}`
+          );
         } catch (error) {
           console.error("Error updating emailVerified:", error);
         }
       }
     },
   },
- callbacks: {
+  callbacks: {
     signIn: async ({ user, account }) => {
       if (account?.provider !== "credentials") {
         const existingUser = (await getUser(user.email as string))?.[0];
@@ -137,18 +138,31 @@ export const {
       const isOnDashboard = nextUrl.pathname.startsWith("/admin");
       if (isOnDashboard) {
         if (isLoggedIn) return true;
-        return false; 
+        return false;
       } else if (isLoggedIn) {
       }
       return true;
     },
-    jwt({ token, user }) {
+    jwt: async ({ token, user, account }) => {
+      // If user is present, it's the initial sign-in
       if (user) {
         token.id = user.id as string;
         token.type = user.type;
-        token.accessToken = user.accessToken as string;
-      }
 
+        // If accessToken already exists (Credentials), use it
+        if (user.accessToken) {
+          token.accessToken = user.accessToken as string;
+        } else {
+          // For OAuth, generate a new access token
+          // Only generate if not already present
+          if (!token.accessToken) {
+            token.accessToken = sign(
+              { id: user.id, type: user.type || "regular" },
+              process.env.AUTH_SECRET as string
+            );
+          }
+        }
+      }
       return token;
     },
     session({ session, token }) {

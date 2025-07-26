@@ -46,6 +46,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid data" }, { status: 400 });
   }
 
+  const fileBuffer = Buffer.from(await validatedData.data.file.arrayBuffer());
+
+  const fileName = file.name;
+
+  let fileUploadedUrl;
+
+  try {
+    const data = await put(`${fileName}`, fileBuffer, {
+      access: "public",
+    });
+
+    fileUploadedUrl = data.url;
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({
+      error: "Could not Upload file to vercel Blob",
+    });
+  }
+
   try {
     console.log("generating transcription");
 
@@ -87,12 +106,12 @@ export async function POST(req: NextRequest) {
     const [resource] = await db
       .insert(resources)
       .values({
-        content,
-        name,
-        description,
+        content: content!,
+        name: name!,
+        description: description!,
         subjectId,
         kind: kind as any,
-        fileUrl: myfile.uri,
+        fileUrl: fileUploadedUrl!,
       })
       .returning();
 
