@@ -46,30 +46,18 @@ const MainHeader = ({ session }: { session: Session | null }) => {
                 </nav>
               </SheetContent>
             </Sheet>
-            <Link href="/admin">
-              <h1 className="text-xl font-semibold">Dashboard</h1>
+            <Link href="/home">
+              <h1 className="text-xl font-semibold">Sahayak</h1>
             </Link>
             <div className="hidden md:flex items-center gap-2 text-muted-foreground">
-              <Link
-                href="/admin/tickets"
-                className="text-sm hover:text-primary"
-              >
-                Tickets
+              <Link href="/grades" className="text-sm hover:text-primary">
+                Grades
               </Link>
               <span className="text-sm">•</span>
-              <Link
-                href="/admin/companies"
-                className="text-sm hover:text-primary"
-              >
-                Companies
+              <Link href="/worksheets" className="text-sm hover:text-primary">
+                Worksheets
               </Link>
               <span className="text-sm">•</span>
-              <Link
-                href="/admin/categories"
-                className="text-sm hover:text-primary"
-              >
-                Categories
-              </Link>
             </div>
           </div>
 

@@ -38,9 +38,6 @@ This is a guide for using artifacts tools: \`createDocument\` and \`updateDocume
 Do not update document right after creating it. Wait for user feedback or request to update it.
 `;
 
-export const regularPrompt =
-  'You are a friendly assistant! Keep your responses concise and helpful.';
-
 export interface RequestHints {
   latitude: Geo['latitude'];
   longitude: Geo['longitude'];
@@ -66,9 +63,9 @@ export const systemPrompt = ({
   const requestPrompt = getRequestPromptFromHints(requestHints);
 
   if (selectedChatModel === 'chat-model-reasoning') {
-    return `${regularPrompt}\n\n${requestPrompt}`;
+    return `${systemPrompt}\n\n${requestPrompt}`;
   } else {
-    return `${regularPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
+    return `${systemPrompt}\n\n${requestPrompt}\n\n${artifactsPrompt}`;
   }
 };
 
@@ -132,6 +129,7 @@ JSON structure:
   "mindmap": {
     "id": "root",
     "text": "Main Topic",
+    
     "children": [
       {
         "id": "child1",
@@ -139,7 +137,12 @@ JSON structure:
         "children": []
       }
     ]
-  }
+  
+
+
+
+
+    }
 }
 
 Create comprehensive, well-structured mindmaps that help users organize and visualize complex ideas.

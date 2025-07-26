@@ -62,16 +62,16 @@
     --radius: 0rem;
     --shadow-2xs: 0px 1px 0px 0px hsl(0 0% 0% / 0);
     --shadow-xs: 0px 1px 0px 0px hsl(0 0% 0% / 0);
-    --shadow-sm: 0px 1px 0px 0px hsl(0 0% 0% / 0),
-      0px 1px 2px -1px hsl(0 0% 0% / 0);
-    --shadow: 0px 1px 0px 0px hsl(0 0% 0% / 0),
-      0px 1px 2px -1px hsl(0 0% 0% / 0);
-    --shadow-md: 0px 1px 0px 0px hsl(0 0% 0% / 0),
-      0px 2px 4px -1px hsl(0 0% 0% / 0);
-    --shadow-lg: 0px 1px 0px 0px hsl(0 0% 0% / 0),
-      0px 4px 6px -1px hsl(0 0% 0% / 0);
-    --shadow-xl: 0px 1px 0px 0px hsl(0 0% 0% / 0),
-      0px 8px 10px -1px hsl(0 0% 0% / 0);
+    --shadow-sm:
+      0px 1px 0px 0px hsl(0 0% 0% / 0), 0px 1px 2px -1px hsl(0 0% 0% / 0);
+    --shadow:
+      0px 1px 0px 0px hsl(0 0% 0% / 0), 0px 1px 2px -1px hsl(0 0% 0% / 0);
+    --shadow-md:
+      0px 1px 0px 0px hsl(0 0% 0% / 0), 0px 2px 4px -1px hsl(0 0% 0% / 0);
+    --shadow-lg:
+      0px 1px 0px 0px hsl(0 0% 0% / 0), 0px 4px 6px -1px hsl(0 0% 0% / 0);
+    --shadow-xl:
+      0px 1px 0px 0px hsl(0 0% 0% / 0), 0px 8px 10px -1px hsl(0 0% 0% / 0);
     --shadow-2xl: 0px 1px 0px 0px hsl(0 0% 0% / 0);
     --tracking-normal: 0em;
     --spacing: 0.25rem;
@@ -116,16 +116,16 @@
     --radius: 0rem;
     --shadow-2xs: 0px 1px 0px 0px hsl(0 0% 0% / 0);
     --shadow-xs: 0px 1px 0px 0px hsl(0 0% 0% / 0);
-    --shadow-sm: 0px 1px 0px 0px hsl(0 0% 0% / 0),
-      0px 1px 2px -1px hsl(0 0% 0% / 0);
-    --shadow: 0px 1px 0px 0px hsl(0 0% 0% / 0),
-      0px 1px 2px -1px hsl(0 0% 0% / 0);
-    --shadow-md: 0px 1px 0px 0px hsl(0 0% 0% / 0),
-      0px 2px 4px -1px hsl(0 0% 0% / 0);
-    --shadow-lg: 0px 1px 0px 0px hsl(0 0% 0% / 0),
-      0px 4px 6px -1px hsl(0 0% 0% / 0);
-    --shadow-xl: 0px 1px 0px 0px hsl(0 0% 0% / 0),
-      0px 8px 10px -1px hsl(0 0% 0% / 0);
+    --shadow-sm:
+      0px 1px 0px 0px hsl(0 0% 0% / 0), 0px 1px 2px -1px hsl(0 0% 0% / 0);
+    --shadow:
+      0px 1px 0px 0px hsl(0 0% 0% / 0), 0px 1px 2px -1px hsl(0 0% 0% / 0);
+    --shadow-md:
+      0px 1px 0px 0px hsl(0 0% 0% / 0), 0px 2px 4px -1px hsl(0 0% 0% / 0);
+    --shadow-lg:
+      0px 1px 0px 0px hsl(0 0% 0% / 0), 0px 4px 6px -1px hsl(0 0% 0% / 0);
+    --shadow-xl:
+      0px 1px 0px 0px hsl(0 0% 0% / 0), 0px 8px 10px -1px hsl(0 0% 0% / 0);
     --shadow-2xl: 0px 1px 0px 0px hsl(0 0% 0% / 0);
   }
 }
@@ -137,6 +137,24 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  h1 {
+    @apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl;
+  }
+
+  h2 {
+    @apply scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0;
+  }
+  h3 {
+    @apply scroll-m-20 text-2xl font-semibold tracking-tight;
+  }
+  h4 {
+    @apply scroll-m-20 text-xl font-semibold tracking-tight;
+  }
+
+  .lead {
+    @apply text-xl text-muted-foreground;
   }
 }
 
@@ -201,4 +219,42 @@
 
 .suggestion-highlight {
   @apply bg-blue-200 hover:bg-blue-300 dark:hover:bg-blue-400/50 dark:text-blue-50 dark:bg-blue-500/40;
+}
+
+.parent-container {
+  display: grid;
+  min-height: 100dvh;
+  grid-template-rows: auto 1fr auto;
+}
+
+.big-container {
+  margin-inline: auto;
+  width: min(90%, 70.5rem);
+}
+
+.narrow-container {
+  margin-inline: auto;
+  width: min(90%, 42.5rem);
+}
+
+.block-space {
+  padding-block: min(12vh, 17rem);
+}
+
+.block-space-large {
+  padding-block: min(14vh, 20rem);
+}
+
+.block-space-mini {
+  padding-block: min(3vh, 6rem);
+}
+
+.blog-index {
+  display: columns;
+  columns: 4;
+}
+
+.blog-index > * {
+  break-inside: avoid;
+  margin-bottom: 1.5em;
 }

@@ -1,4 +1,4 @@
-import type { InferSelectModel } from 'drizzle-orm';
+import type { InferSelectModel } from "drizzle-orm";
 import {
   pgTable,
   varchar,
@@ -14,10 +14,8 @@ import {
   integer,
   vector,
   index,
-} from 'drizzle-orm/pg-core';
+} from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "next-auth/adapters";
-
-
 
 export const user = pgTable("user", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
@@ -99,43 +97,43 @@ export const authenticators = pgTable(
     }),
   })
 );
-export const chat = pgTable('Chat', {
-  id: uuid('id').primaryKey().notNull().defaultRandom(),
-  createdAt: timestamp('createdAt').notNull(),
-  title: text('title').notNull(),
-  userId: uuid('userId')
+export const chat = pgTable("Chat", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  createdAt: timestamp("createdAt").notNull(),
+  title: text("title").notNull(),
+  userId: uuid("userId")
     .notNull()
     .references(() => user.id),
-  visibility: varchar('visibility', { enum: ['public', 'private'] })
+  visibility: varchar("visibility", { enum: ["public", "private"] })
     .notNull()
-    .default('private'),
+    .default("private"),
 });
 
 export type Chat = InferSelectModel<typeof chat>;
 
 // DEPRECATED: The following schema is deprecated and will be removed in the future.
 // Read the migration guide at https://chat-sdk.dev/docs/migration-guides/message-parts
-export const messageDeprecated = pgTable('Message', {
-  id: uuid('id').primaryKey().notNull().defaultRandom(),
-  chatId: uuid('chatId')
+export const messageDeprecated = pgTable("Message", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  chatId: uuid("chatId")
     .notNull()
     .references(() => chat.id),
-  role: varchar('role').notNull(),
-  content: json('content').notNull(),
-  createdAt: timestamp('createdAt').notNull(),
+  role: varchar("role").notNull(),
+  content: json("content").notNull(),
+  createdAt: timestamp("createdAt").notNull(),
 });
 
 export type MessageDeprecated = InferSelectModel<typeof messageDeprecated>;
 
-export const message = pgTable('Message_v2', {
-  id: uuid('id').primaryKey().notNull().defaultRandom(),
-  chatId: uuid('chatId')
+export const message = pgTable("Message_v2", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  chatId: uuid("chatId")
     .notNull()
     .references(() => chat.id),
-  role: varchar('role').notNull(),
-  parts: json('parts').notNull(),
-  attachments: json('attachments').notNull(),
-  createdAt: timestamp('createdAt').notNull(),
+  role: varchar("role").notNull(),
+  parts: json("parts").notNull(),
+  attachments: json("attachments").notNull(),
+  createdAt: timestamp("createdAt").notNull(),
 });
 
 export type DBMessage = InferSelectModel<typeof message>;
@@ -143,56 +141,58 @@ export type DBMessage = InferSelectModel<typeof message>;
 // DEPRECATED: The following schema is deprecated and will be removed in the future.
 // Read the migration guide at https://chat-sdk.dev/docs/migration-guides/message-parts
 export const voteDeprecated = pgTable(
-  'Vote',
+  "Vote",
   {
-    chatId: uuid('chatId')
+    chatId: uuid("chatId")
       .notNull()
       .references(() => chat.id),
-    messageId: uuid('messageId')
+    messageId: uuid("messageId")
       .notNull()
       .references(() => messageDeprecated.id),
-    isUpvoted: boolean('isUpvoted').notNull(),
+    isUpvoted: boolean("isUpvoted").notNull(),
   },
   (table) => {
     return {
       pk: primaryKey({ columns: [table.chatId, table.messageId] }),
     };
-  },
+  }
 );
 
 export type VoteDeprecated = InferSelectModel<typeof voteDeprecated>;
 
 export const vote = pgTable(
-  'Vote_v2',
+  "Vote_v2",
   {
-    chatId: uuid('chatId')
+    chatId: uuid("chatId")
       .notNull()
       .references(() => chat.id),
-    messageId: uuid('messageId')
+    messageId: uuid("messageId")
       .notNull()
       .references(() => message.id),
-    isUpvoted: boolean('isUpvoted').notNull(),
+    isUpvoted: boolean("isUpvoted").notNull(),
   },
   (table) => {
     return {
       pk: primaryKey({ columns: [table.chatId, table.messageId] }),
     };
-  },
+  }
 );
 
 export type Vote = InferSelectModel<typeof vote>;
 
 export const document = pgTable(
-  'Document',
+  "Document",
   {
-    id: uuid('id').notNull().defaultRandom(),
-    createdAt: timestamp('createdAt').notNull(),
-    title: text('title').notNull(),
-    content: text('content'),
-    kind: varchar('text', { enum: ['text', 'code', 'image', 'sheet', "mindmap"] })
+    id: uuid("id").notNull().defaultRandom(),
+    createdAt: timestamp("createdAt").notNull(),
+    title: text("title").notNull(),
+    content: text("content"),
+    kind: varchar("text", {
+      enum: ["text", "code", "image", "sheet", "mindmap"],
+    })
       .notNull()
-      .default('text'),
-    userId: uuid('userId')
+      .default("text"),
+    userId: uuid("userId")
       .notNull()
       .references(() => user.id),
   },
@@ -200,25 +200,25 @@ export const document = pgTable(
     return {
       pk: primaryKey({ columns: [table.id, table.createdAt] }),
     };
-  },
+  }
 );
 
 export type Document = InferSelectModel<typeof document>;
 
 export const suggestion = pgTable(
-  'Suggestion',
+  "Suggestion",
   {
-    id: uuid('id').notNull().defaultRandom(),
-    documentId: uuid('documentId').notNull(),
-    documentCreatedAt: timestamp('documentCreatedAt').notNull(),
-    originalText: text('originalText').notNull(),
-    suggestedText: text('suggestedText').notNull(),
-    description: text('description'),
-    isResolved: boolean('isResolved').notNull().default(false),
-    userId: uuid('userId')
+    id: uuid("id").notNull().defaultRandom(),
+    documentId: uuid("documentId").notNull(),
+    documentCreatedAt: timestamp("documentCreatedAt").notNull(),
+    originalText: text("originalText").notNull(),
+    suggestedText: text("suggestedText").notNull(),
+    description: text("description"),
+    isResolved: boolean("isResolved").notNull().default(false),
+    userId: uuid("userId")
       .notNull()
       .references(() => user.id),
-    createdAt: timestamp('createdAt').notNull(),
+    createdAt: timestamp("createdAt").notNull(),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.id] }),
@@ -226,17 +226,17 @@ export const suggestion = pgTable(
       columns: [table.documentId, table.documentCreatedAt],
       foreignColumns: [document.id, document.createdAt],
     }),
-  }),
+  })
 );
 
 export type Suggestion = InferSelectModel<typeof suggestion>;
 
 export const stream = pgTable(
-  'Stream',
+  "Stream",
   {
-    id: uuid('id').notNull().defaultRandom(),
-    chatId: uuid('chatId').notNull(),
-    createdAt: timestamp('createdAt').notNull(),
+    id: uuid("id").notNull().defaultRandom(),
+    chatId: uuid("chatId").notNull(),
+    createdAt: timestamp("createdAt").notNull(),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.id] }),
@@ -244,24 +244,20 @@ export const stream = pgTable(
       columns: [table.chatId],
       foreignColumns: [chat.id],
     }),
-  }),
+  })
 );
 
 export type Stream = InferSelectModel<typeof stream>;
 
-
-
-
-export const employee = pgTable('Employee', {
-  id: uuid('id').primaryKey().notNull().defaultRandom(),
-  name: text('name').notNull(),
-  email: text('email').notNull(),
-  phone: text('phone').notNull(),
-  address: text('address').notNull(),
+export const employee = pgTable("Employee", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  address: text("address").notNull(),
 });
 
 export type Employee = InferSelectModel<typeof employee>;
-
 
 export const twoFactorConfirmation = pgTable("two_factor_confirmation", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
@@ -340,39 +336,83 @@ export const travel = pgTable("travel", {
 
 export type Travel = InferSelectModel<typeof travel>;
 
-export const resources = pgTable(
-  "resources",
-  {
-    id: uuid("id").primaryKey().notNull().defaultRandom(),
-    name: text("name").notNull(),
-    description: text("description"),
-    content: text("content"),
-    fileUrl: text("file_url"),
-    kind: varchar("kind", {
-      enum: [
-        "pdf",
-        "doc",
-        "docx",
-        "txt",
-        "jpg",
-        "jpeg",
-        "png",
-        "gif",
-        "webp",
-        "xls",
-        "xlsx",
-        "image",
-        "excel",
-        "audio",
-      ],
-    })
-      .notNull()
-      .default("pdf"),
-    tags: text("tags").array(),
-    createdAt: timestamp("created_at").notNull().defaultNow(),
-    updatedAt: timestamp("updated_at").notNull().defaultNow(),
-  }
-);
+export const grades = pgTable("grades", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  title: text("name").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+
+  userId: uuid("userId")
+    .references(() => user.id)
+    .notNull(),
+});
+
+export type Grades = InferSelectModel<typeof grades>;
+
+export const subjects = pgTable("subjects", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  name: text("name").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  gradeId: uuid("gradeId")
+    .references(() => grades.id)
+    .notNull(),
+});
+
+export type Subjects = InferSelectModel<typeof subjects>;
+
+export const notes = pgTable("notes", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  title: text("title").notNull(),
+  content: text("content"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  subjectId: uuid("subjectId")
+    .references(() => subjects.id)
+    .notNull(),
+  userId: uuid("userId")
+    .references(() => user.id)
+    .notNull(),
+});
+
+export type Notes = InferSelectModel<typeof notes>;
+
+export const resources = pgTable("resources", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  name: text("name").notNull(),
+  description: text("description"),
+  content: text("content"),
+  fileUrl: text("file_url"),
+  kind: varchar("kind", {
+    enum: [
+      "pdf",
+      "doc",
+      "docx",
+      "txt",
+      "jpg",
+      "jpeg",
+      "png",
+      "gif",
+      "webp",
+      "xls",
+      "xlsx",
+      "image",
+      "excel",
+      "audio",
+    ],
+  })
+    .notNull()
+    .default("pdf"),
+  tags: text("tags").array(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+
+  subjectId: uuid("subjectId")
+    .references(() => subjects.id)
+    .notNull(),
+});
 
 export type Resource = InferSelectModel<typeof resources>;
 
