@@ -74,7 +74,7 @@ function PureChatHeader({
       </div>
       <div className="">
         <Button asChild>
-          <Link href="/">Home</Link>
+          <Link href="/home">Home</Link>
         </Button>
       </div>
     </header>
