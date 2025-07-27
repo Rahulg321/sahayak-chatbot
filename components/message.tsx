@@ -355,7 +355,6 @@ const PurePreviewMessage = ({
                   );
                 }
               }
-
               if (type === "tool-getResourcesInformation") {
                 const { toolCallId, state } = part;
 
