@@ -63,7 +63,7 @@ const HomePage = async () => {
                   Smart Lesson Planning
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  AI-powered curriculum design tailored to your students' needs
+                  AI-powered curriculum design tailored to your students needs
                 </p>
               </CardContent>
             </Card>
