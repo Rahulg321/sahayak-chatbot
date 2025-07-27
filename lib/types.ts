@@ -10,6 +10,7 @@ import type { InferUITool, UIMessage } from "ai";
 import type { ArtifactKind } from "@/components/artifact";
 import type { Suggestion } from "./db/schema";
 import { getUserSubjects } from "./ai/tools/get-user-subjects";
+import { getNotesFromSubjectId } from "./ai/tools/getNotesFromSubjectId";
 
 interface CurriculumUnit {
   id: string;
@@ -175,6 +176,7 @@ type requestSuggestionsTool = InferUITool<
   ReturnType<typeof requestSuggestions>
 >;
 type getResourcesInformationTool = InferUITool<typeof getResourcesInformation>;
+type getNotesFromSubjectIdTool = InferUITool<typeof getNotesFromSubjectId>;
 export type ChatTools = {
   getWeather: weatherTool;
   getUserGrades: getUserGradesTool;
@@ -183,6 +185,7 @@ export type ChatTools = {
   updateDocument: updateDocumentTool;
   requestSuggestions: requestSuggestionsTool;
   getResourcesInformation: getResourcesInformationTool;
+  getNotesFromSubjectId: getNotesFromSubjectIdTool;
 };
 
 export type CustomUIDataTypes = {

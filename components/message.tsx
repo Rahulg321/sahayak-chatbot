@@ -388,6 +388,35 @@ const PurePreviewMessage = ({
                   );
                 }
               }
+
+              if (type === "tool-getNotesFromSubjectId") {
+                const { toolCallId, state } = part;
+
+                if (state === "input-available") {
+                  return <div key={toolCallId} className="skeleton" />;
+                }
+
+                if (state === "output-available") {
+                  const { output } = part;
+
+                  if ("error" in output) {
+                    return (
+                      <div
+                        key={toolCallId}
+                        className="text-red-500 p-2 border rounded"
+                      >
+                        Error: {String(output.error)}
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div key={toolCallId}>
+                      {output.map((note) => note.title).join(", ")}
+                    </div>
+                  );
+                }
+              }
             })}
 
             {!isReadonly && (

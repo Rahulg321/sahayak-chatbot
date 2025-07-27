@@ -42,6 +42,7 @@ import { getResourcesInformation } from "@/lib/ai/tools/get-resources-informatio
 import { getSubjectIdFromName } from "@/lib/ai/tools/getSubjectIdFromName";
 import { getUserSubjects } from "@/lib/ai/tools/get-user-subjects";
 import { getAllSubjectResources } from "@/lib/ai/tools/get-all-subject-resources";
+import { getNotesFromSubjectId } from "@/lib/ai/tools/getNotesFromSubjectId";
 
 export const maxDuration = 60;
 
@@ -170,6 +171,7 @@ export async function POST(request: Request) {
             "updateDocument",
             "requestSuggestions",
             "getResourcesInformation",
+            "getNotesFromSubjectId",
           ],
           experimental_transform: smoothStream({ chunking: "word" }),
           tools: {
@@ -179,6 +181,7 @@ export async function POST(request: Request) {
             getSubjectIdFromName,
             getResourcesInformation,
             getUserSubjects,
+            getNotesFromSubjectId,
             createDocument: createDocument({ session, dataStream }),
             updateDocument: updateDocument({ session, dataStream }),
             requestSuggestions: requestSuggestions({
