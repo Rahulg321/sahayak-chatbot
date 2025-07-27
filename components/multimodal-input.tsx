@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import type { UIMessage } from 'ai';
-import cx from 'classnames';
-import type React from 'react';
+import type { UIMessage } from "ai";
+import cx from "classnames";
+import type React from "react";
 import {
   useRef,
   useEffect,
@@ -12,22 +12,24 @@ import {
   type SetStateAction,
   type ChangeEvent,
   memo,
-} from 'react';
-import { toast } from 'sonner';
-import { useLocalStorage, useWindowSize } from 'usehooks-ts';
+} from "react";
+import { toast } from "sonner";
+import { useLocalStorage, useWindowSize } from "usehooks-ts";
 
-import { ArrowUpIcon, PaperclipIcon, StopIcon } from './icons';
-import { PreviewAttachment } from './preview-attachment';
-import { Button } from './ui/button';
-import { Textarea } from './ui/textarea';
-import { SuggestedActions } from './suggested-actions';
-import equal from 'fast-deep-equal';
-import type { UseChatHelpers } from '@ai-sdk/react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowDown } from 'lucide-react';
-import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
-import type { VisibilityType } from './visibility-selector';
-import type { Attachment, ChatMessage } from '@/lib/types';
+import { ArrowUpIcon, PaperclipIcon, StopIcon } from "./icons";
+import { PreviewAttachment } from "./preview-attachment";
+import { Button } from "./ui/button";
+import { Textarea } from "./ui/textarea";
+import { SuggestedActions } from "./suggested-actions";
+import equal from "fast-deep-equal";
+import type { UseChatHelpers } from "@ai-sdk/react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowDown } from "lucide-react";
+import { useScrollToBottom } from "@/hooks/use-scroll-to-bottom";
+import type { VisibilityType } from "./visibility-selector";
+import type { Attachment, ChatMessage } from "@/lib/types";
+import ResourceSelectDialog from "./dialogs/resource-select-dialog";
+import SelectedResourceDialog from "./dialogs/selected-resource-dialog";
 
 function PureMultimodalInput({
   chatId,
@@ -42,19 +44,27 @@ function PureMultimodalInput({
   sendMessage,
   className,
   selectedVisibilityType,
+  selectedResources,
+  setSelectedResources,
+  children,
 }: {
   chatId: string;
   input: string;
   setInput: Dispatch<SetStateAction<string>>;
-  status: UseChatHelpers<ChatMessage>['status'];
+  status: UseChatHelpers<ChatMessage>["status"];
   stop: () => void;
   attachments: Array<Attachment>;
   setAttachments: Dispatch<SetStateAction<Array<Attachment>>>;
   messages: Array<UIMessage>;
-  setMessages: UseChatHelpers<ChatMessage>['setMessages'];
-  sendMessage: UseChatHelpers<ChatMessage>['sendMessage'];
+  setMessages: UseChatHelpers<ChatMessage>["setMessages"];
+  sendMessage: UseChatHelpers<ChatMessage>["sendMessage"];
   className?: string;
   selectedVisibilityType: VisibilityType;
+  selectedResources?: { id: string; name: string }[];
+  setSelectedResources?: Dispatch<
+    SetStateAction<{ id: string; name: string }[]>
+  >;
+  children?: React.ReactNode;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
@@ -67,28 +77,28 @@ function PureMultimodalInput({
 
   const adjustHeight = () => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight + 2}px`;
     }
   };
 
   const resetHeight = () => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = '98px';
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = "98px";
     }
   };
 
   const [localStorageInput, setLocalStorageInput] = useLocalStorage(
-    'input',
-    '',
+    "input",
+    ""
   );
 
   useEffect(() => {
     if (textareaRef.current) {
       const domValue = textareaRef.current.value;
       // Prefer DOM value over localStorage to handle hydration
-      const finalValue = domValue || localStorageInput || '';
+      const finalValue = domValue || localStorageInput || "";
       setInput(finalValue);
       adjustHeight();
     }
@@ -109,28 +119,28 @@ function PureMultimodalInput({
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
 
   const submitForm = useCallback(() => {
-    window.history.replaceState({}, '', `/chat/${chatId}`);
+    window.history.replaceState({}, "", `/chat/${chatId}`);
 
     sendMessage({
-      role: 'user',
+      role: "user",
       parts: [
         ...attachments.map((attachment) => ({
-          type: 'file' as const,
+          type: "file" as const,
           url: attachment.url,
           name: attachment.name,
           mediaType: attachment.contentType,
         })),
         {
-          type: 'text',
+          type: "text",
           text: input,
         },
       ],
     });
 
     setAttachments([]);
-    setLocalStorageInput('');
+    setLocalStorageInput("");
     resetHeight();
-    setInput('');
+    setInput("");
 
     if (width && width > 768) {
       textareaRef.current?.focus();
@@ -148,11 +158,11 @@ function PureMultimodalInput({
 
   const uploadFile = async (file: File) => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     try {
-      const response = await fetch('/api/files/upload', {
-        method: 'POST',
+      const response = await fetch("/api/files/upload", {
+        method: "POST",
         body: formData,
       });
 
@@ -169,7 +179,7 @@ function PureMultimodalInput({
       const { error } = await response.json();
       toast.error(error);
     } catch (error) {
-      toast.error('Failed to upload file, please try again!');
+      toast.error("Failed to upload file, please try again!");
     }
   };
 
@@ -183,7 +193,7 @@ function PureMultimodalInput({
         const uploadPromises = files.map((file) => uploadFile(file));
         const uploadedAttachments = await Promise.all(uploadPromises);
         const successfullyUploadedAttachments = uploadedAttachments.filter(
-          (attachment) => attachment !== undefined,
+          (attachment) => attachment !== undefined
         );
 
         setAttachments((currentAttachments) => [
@@ -191,18 +201,18 @@ function PureMultimodalInput({
           ...successfullyUploadedAttachments,
         ]);
       } catch (error) {
-        console.error('Error uploading files!', error);
+        console.error("Error uploading files!", error);
       } finally {
         setUploadQueue([]);
       }
     },
-    [setAttachments],
+    [setAttachments]
   );
 
   const { isAtBottom, scrollToBottom } = useScrollToBottom();
 
   useEffect(() => {
-    if (status === 'submitted') {
+    if (status === "submitted") {
       scrollToBottom();
     }
   }, [status, scrollToBottom]);
@@ -215,7 +225,7 @@ function PureMultimodalInput({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
             className="absolute left-1/2 bottom-28 -translate-x-1/2 z-50"
           >
             <Button
@@ -266,9 +276,9 @@ function PureMultimodalInput({
             <PreviewAttachment
               key={filename}
               attachment={{
-                url: '',
+                url: "",
                 name: filename,
-                contentType: '',
+                contentType: "",
               }}
               isUploading={true}
             />
@@ -283,21 +293,21 @@ function PureMultimodalInput({
         value={input}
         onChange={handleInput}
         className={cx(
-          'min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl !text-base bg-muted pb-10 dark:border-zinc-700',
-          className,
+          "min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl !text-base bg-muted pb-10 dark:border-zinc-700",
+          className
         )}
         rows={2}
         autoFocus
         onKeyDown={(event) => {
           if (
-            event.key === 'Enter' &&
+            event.key === "Enter" &&
             !event.shiftKey &&
             !event.nativeEvent.isComposing
           ) {
             event.preventDefault();
 
-            if (status !== 'ready') {
-              toast.error('Please wait for the model to finish its response!');
+            if (status !== "ready") {
+              toast.error("Please wait for the model to finish its response!");
             } else {
               submitForm();
             }
@@ -305,12 +315,24 @@ function PureMultimodalInput({
         }}
       />
 
-      <div className="absolute bottom-0 p-2 w-fit flex flex-row justify-start">
-        <AttachmentsButton fileInputRef={fileInputRef} status={status} />
+      <div className="absolute bottom-0 px-4 pb-3 z-10 w-fit flex flex-row justify-start">
+        <div className="flex flex-row gap-2 items-center">
+          <AttachmentsButton fileInputRef={fileInputRef} status={status} />
+          <ResourceSelectDialog
+            selectedResources={selectedResources || []}
+            setSelectedResources={setSelectedResources || (() => {})}
+          />
+          {selectedResources && selectedResources.length > 0 && (
+            <SelectedResourceDialog
+              selectedResources={selectedResources || []}
+              setSelectedResources={setSelectedResources || (() => {})}
+            />
+          )}
+        </div>
       </div>
 
       <div className="absolute bottom-0 right-0 p-2 w-fit flex flex-row justify-end">
-        {status === 'submitted' ? (
+        {status === "submitted" ? (
           <StopButton stop={stop} setMessages={setMessages} />
         ) : (
           <SendButton
@@ -333,8 +355,12 @@ export const MultimodalInput = memo(
     if (prevProps.selectedVisibilityType !== nextProps.selectedVisibilityType)
       return false;
 
+    // Re-render when selected resources change
+    if (!equal(prevProps.selectedResources, nextProps.selectedResources))
+      return false;
+
     return true;
-  },
+  }
 );
 
 function PureAttachmentsButton({
@@ -342,7 +368,7 @@ function PureAttachmentsButton({
   status,
 }: {
   fileInputRef: React.MutableRefObject<HTMLInputElement | null>;
-  status: UseChatHelpers<ChatMessage>['status'];
+  status: UseChatHelpers<ChatMessage>["status"];
 }) {
   return (
     <Button
@@ -352,7 +378,7 @@ function PureAttachmentsButton({
         event.preventDefault();
         fileInputRef.current?.click();
       }}
-      disabled={status !== 'ready'}
+      disabled={status !== "ready"}
       variant="ghost"
     >
       <PaperclipIcon size={14} />
@@ -367,7 +393,7 @@ function PureStopButton({
   setMessages,
 }: {
   stop: () => void;
-  setMessages: UseChatHelpers<ChatMessage>['setMessages'];
+  setMessages: UseChatHelpers<ChatMessage>["setMessages"];
 }) {
   return (
     <Button

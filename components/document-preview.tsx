@@ -21,6 +21,9 @@ import { useArtifact } from "@/hooks/use-artifact";
 import equal from "fast-deep-equal";
 import { SpreadsheetEditor } from "./sheet-editor";
 import { ImageEditor } from "./image-editor";
+import { CurriculumViewer } from "./curriculum-viewer";
+import { HomeworkViewer } from "./homework-viewer";
+import { LessonPlanViewer } from "./lesson-plan-viewer";
 
 // Simple mindmap preview component
 const MindmapPreview = ({ content }: { content: string }) => {
@@ -66,6 +69,197 @@ const MindmapPreview = ({ content }: { content: string }) => {
           {content ? "Loading mindmap..." : "No mindmap data available"}
         </div>
       )}
+    </div>
+  );
+};
+
+// Simple curriculum preview component
+const CurriculumPreview = ({ content }: { content: string }) => {
+  let curriculumData;
+
+  try {
+    if (content?.trim()) curriculumData = JSON.parse(content);
+    else throw new Error("Empty curriculum content");
+  } catch (e) {
+    console.error(e);
+  }
+
+  if (!curriculumData || !curriculumData.title) {
+    return (
+      <div className="text-xs text-muted-foreground p-3 border border-dashed border-border rounded bg-muted">
+        {content ? "Loading curriculum..." : "No curriculum data available"}
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 h-full overflow-y-auto">
+      <div className="space-y-3">
+        <div>
+          <h3 className="font-semibold text-sm text-primary">
+            {curriculumData.title}
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            {curriculumData.description}
+          </p>
+        </div>
+
+        {curriculumData.units && curriculumData.units.length > 0 && (
+          <div className="space-y-2">
+            <h4 className="text-xs font-medium">
+              Units ({curriculumData.units.length})
+            </h4>
+            <div className="space-y-1">
+              {curriculumData.units.slice(0, 3).map((unit: any) => (
+                <div
+                  key={unit.id}
+                  className="text-xs p-2 bg-muted/50 rounded border"
+                >
+                  <div className="font-medium">
+                    Unit {unit.order}: {unit.title}
+                  </div>
+                  {unit.topics && (
+                    <div className="text-muted-foreground mt-1">
+                      {unit.topics.length} topics
+                    </div>
+                  )}
+                </div>
+              ))}
+              {curriculumData.units.length > 3 && (
+                <div className="text-xs text-muted-foreground">
+                  +{curriculumData.units.length - 3} more units
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Simple homework preview component
+const HomeworkPreview = ({ content }: { content: string }) => {
+  let homeworkData;
+
+  try {
+    if (content?.trim()) homeworkData = JSON.parse(content);
+    else throw new Error("Empty homework content");
+  } catch (e) {
+    console.error(e);
+  }
+
+  if (!homeworkData || !homeworkData.title) {
+    return (
+      <div className="text-xs text-muted-foreground p-3 border border-dashed border-border rounded bg-muted">
+        {content ? "Loading homework..." : "No homework data available"}
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 h-full overflow-y-auto">
+      <div className="space-y-3">
+        <div>
+          <h3 className="font-semibold text-sm text-primary">
+            {homeworkData.title}
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            {homeworkData.description}
+          </p>
+        </div>
+
+        {homeworkData.tasks && homeworkData.tasks.length > 0 && (
+          <div className="space-y-2">
+            <h4 className="text-xs font-medium">
+              Tasks ({homeworkData.tasks.length})
+            </h4>
+            <div className="space-y-1">
+              {homeworkData.tasks.slice(0, 3).map((task: any) => (
+                <div
+                  key={task.id}
+                  className="text-xs p-2 bg-muted/50 rounded border"
+                >
+                  <div className="font-medium">
+                    Task {task.order}: {task.title}
+                  </div>
+                  <div className="text-muted-foreground mt-1">
+                    {task.estimatedTime} min • {task.type}
+                  </div>
+                </div>
+              ))}
+              {homeworkData.tasks.length > 3 && (
+                <div className="text-xs text-muted-foreground">
+                  +{homeworkData.tasks.length - 3} more tasks
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Simple lesson plan preview component
+const LessonPlanPreview = ({ content }: { content: string }) => {
+  let lessonPlanData;
+
+  try {
+    if (content?.trim()) lessonPlanData = JSON.parse(content);
+    else throw new Error("Empty lesson plan content");
+  } catch (e) {
+    console.error(e);
+  }
+
+  if (!lessonPlanData || !lessonPlanData.title) {
+    return (
+      <div className="text-xs text-muted-foreground p-3 border border-dashed border-border rounded bg-muted">
+        {content ? "Loading lesson plan..." : "No lesson plan data available"}
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 h-full overflow-y-auto">
+      <div className="space-y-3">
+        <div>
+          <h3 className="font-semibold text-sm text-primary">
+            {lessonPlanData.title}
+          </h3>
+          <p className="text-xs text-muted-foreground">
+            {lessonPlanData.description}
+          </p>
+        </div>
+
+        {lessonPlanData.activities && lessonPlanData.activities.length > 0 && (
+          <div className="space-y-2">
+            <h4 className="text-xs font-medium">
+              Activities ({lessonPlanData.activities.length})
+            </h4>
+            <div className="space-y-1">
+              {lessonPlanData.activities.slice(0, 3).map((activity: any) => (
+                <div
+                  key={activity.id}
+                  className="text-xs p-2 bg-muted/50 rounded border"
+                >
+                  <div className="font-medium">
+                    Activity {activity.order}: {activity.title}
+                  </div>
+                  <div className="text-muted-foreground mt-1">
+                    {activity.estimatedTime} min • {activity.type}
+                  </div>
+                </div>
+              ))}
+              {lessonPlanData.activities.length > 3 && (
+                <div className="text-xs text-muted-foreground">
+                  +{lessonPlanData.activities.length - 3} more activities
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -185,6 +379,10 @@ const LoadingSkeleton = ({ artifactKind }: { artifactKind: ArtifactKind }) => (
       <div className="overflow-y-scroll border rounded-b-2xl p-2 bg-muted border-t-0 dark:border-zinc-700">
         <div className="animate-pulse h-[257px] bg-muted-foreground/20 w-full rounded" />
       </div>
+    ) : artifactKind === "curriculum" ? (
+      <div className="overflow-y-scroll border rounded-b-2xl p-2 bg-muted border-t-0 dark:border-zinc-700">
+        <div className="animate-pulse h-[257px] bg-muted-foreground/20 w-full rounded" />
+      </div>
     ) : (
       <div className="overflow-y-scroll border rounded-b-2xl p-8 pt-4 bg-muted border-t-0 dark:border-zinc-700">
         <InlineDocumentSkeleton />
@@ -294,7 +492,11 @@ const DocumentContent = ({ document }: { document: Document }) => {
     {
       "p-4 sm:px-14 sm:py-16": document.kind === "text",
       "p-0": document.kind === "code",
-      "p-2": document.kind === "mindmap",
+      "p-2":
+        document.kind === "mindmap" ||
+        document.kind === "curriculum" ||
+        document.kind === "homework" ||
+        document.kind === "lesson-plan",
     }
   );
 
@@ -334,6 +536,12 @@ const DocumentContent = ({ document }: { document: Document }) => {
         />
       ) : document.kind === "mindmap" ? (
         <MindmapPreview content={document.content ?? ""} />
+      ) : document.kind === "curriculum" ? (
+        <CurriculumPreview content={document.content ?? ""} />
+      ) : document.kind === "homework" ? (
+        <HomeworkPreview content={document.content ?? ""} />
+      ) : document.kind === "lesson-plan" ? (
+        <LessonPlanPreview content={document.content ?? ""} />
       ) : null}
     </div>
   );

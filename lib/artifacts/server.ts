@@ -1,14 +1,17 @@
-import { codeDocumentHandler } from '@/artifacts/code/server';
-import { imageDocumentHandler } from '@/artifacts/image/server';
-import { sheetDocumentHandler } from '@/artifacts/sheet/server';
-import { textDocumentHandler } from '@/artifacts/text/server';
-import { mindmapDocumentHandler } from '@/artifacts/mindmap/server';
-import type { ArtifactKind } from '@/components/artifact';
-import type { Document } from '../db/schema';
-import { saveDocument } from '../db/queries';
-import type { Session } from 'next-auth';
-import type { UIMessageStreamWriter } from 'ai';
-import type { ChatMessage } from '../types';
+import { codeDocumentHandler } from "@/artifacts/code/server";
+import { imageDocumentHandler } from "@/artifacts/image/server";
+import { sheetDocumentHandler } from "@/artifacts/sheet/server";
+import { textDocumentHandler } from "@/artifacts/text/server";
+import { mindmapDocumentHandler } from "@/artifacts/mindmap/server";
+import { curriculumDocumentHandler } from "@/artifacts/curriculum/server";
+import { homeworkDocumentHandler } from "@/artifacts/homework/server";
+import { lessonPlanDocumentHandler } from "@/artifacts/lesson-plan/server";
+import type { ArtifactKind } from "@/components/artifact";
+import type { Document } from "../db/schema";
+import { saveDocument } from "../db/queries";
+import type { Session } from "next-auth";
+import type { UIMessageStreamWriter } from "ai";
+import type { ChatMessage } from "../types";
 
 export interface SaveDocumentProps {
   id: string;
@@ -97,6 +100,18 @@ export const documentHandlersByArtifactKind: Array<DocumentHandler> = [
   imageDocumentHandler,
   sheetDocumentHandler,
   mindmapDocumentHandler,
+  curriculumDocumentHandler,
+  homeworkDocumentHandler,
+  lessonPlanDocumentHandler,
 ];
 
-export const artifactKinds = ['text', 'code', 'image', 'sheet', 'mindmap'] as const;
+export const artifactKinds = [
+  "text",
+  "code",
+  "image",
+  "sheet",
+  "mindmap",
+  "curriculum",
+  "homework",
+  "lesson-plan",
+] as const;

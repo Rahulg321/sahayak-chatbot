@@ -188,7 +188,16 @@ export const document = pgTable(
     title: text("title").notNull(),
     content: text("content"),
     kind: varchar("text", {
-      enum: ["text", "code", "image", "sheet", "mindmap"],
+      enum: [
+        "text",
+        "code",
+        "image",
+        "sheet",
+        "mindmap",
+        "curriculum",
+        "homework",
+        "lesson-plan",
+      ],
     })
       .notNull()
       .default("text"),
@@ -362,6 +371,51 @@ export const subjects = pgTable("subjects", {
 });
 
 export type Subjects = InferSelectModel<typeof subjects>;
+
+export const curriculums = pgTable("curriculums", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  title: text("title").notNull(),
+  description: text("description"),
+  totalEstimatedHours: integer("total_estimated_hours"),
+  prerequisites: text("prerequisites").array(),
+  assessmentMethods: text("assessment_methods").array(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  subjectId: uuid("subjectId")
+    .references(() => subjects.id, { onDelete: "cascade" })
+    .notNull(),
+});
+
+export type Curriculum = InferSelectModel<typeof curriculums>;
+
+export const curriculumUnits = pgTable("curriculum_units", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  curriculumId: uuid("curriculum_id")
+    .notNull()
+    .references(() => curriculums.id),
+  title: text("title").notNull(),
+  description: text("description"),
+  order: integer("unit_order").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export type CurriculumUnit = InferSelectModel<typeof curriculumUnits>;
+
+export const topics = pgTable("topics", {
+  id: uuid("id").primaryKey().notNull().defaultRandom(),
+  unitId: uuid("unit_id")
+    .notNull()
+    .references(() => curriculumUnits.id),
+  title: text("title").notNull(),
+  description: text("description"),
+  order: integer("topic_order").notNull(),
+  learningObjectives: text("learning_objectives").array(),
+  estimatedHours: integer("estimated_hours"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+export type Topic = InferSelectModel<typeof topics>;
 
 export const notes = pgTable("notes", {
   id: uuid("id").primaryKey().notNull().defaultRandom(),
