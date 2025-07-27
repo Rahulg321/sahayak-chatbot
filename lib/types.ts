@@ -4,13 +4,15 @@ import type { getUserGrades } from "./ai/tools/get-user-grades";
 import type { createDocument } from "./ai/tools/create-document";
 import type { updateDocument } from "./ai/tools/update-document";
 import type { requestSuggestions } from "./ai/tools/request-suggestions";
-import { getResourcesInformation } from "./ai/tools/get-resources-information";
+import type { getResourcesInformation } from "./ai/tools/get-resources-information";
 import type { InferUITool, UIMessage } from "ai";
 
 import type { ArtifactKind } from "@/components/artifact";
 import type { Suggestion } from "./db/schema";
 import { getUserSubjects } from "./ai/tools/get-user-subjects";
 import { getNotesFromSubjectId } from "./ai/tools/getNotesFromSubjectId";
+import { getSubjectIdFromName } from "./ai/tools/getSubjectIdFromName";
+import { getAllSubjectResources } from "./ai/tools/get-all-subject-resources";
 
 interface CurriculumUnit {
   id: string;
@@ -177,6 +179,8 @@ type requestSuggestionsTool = InferUITool<
 >;
 type getResourcesInformationTool = InferUITool<typeof getResourcesInformation>;
 type getNotesFromSubjectIdTool = InferUITool<typeof getNotesFromSubjectId>;
+type getSubjectIdFromNameTool = InferUITool<typeof getSubjectIdFromName>;
+type getAllSubjectResourcesTool = InferUITool<typeof getAllSubjectResources>;
 export type ChatTools = {
   getWeather: weatherTool;
   getUserGrades: getUserGradesTool;
@@ -186,6 +190,8 @@ export type ChatTools = {
   requestSuggestions: requestSuggestionsTool;
   getResourcesInformation: getResourcesInformationTool;
   getNotesFromSubjectId: getNotesFromSubjectIdTool;
+  getSubjectIdFromName: getSubjectIdFromNameTool;
+  getAllSubjectResources: getAllSubjectResourcesTool;
 };
 
 export type CustomUIDataTypes = {

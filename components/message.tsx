@@ -389,6 +389,22 @@ const PurePreviewMessage = ({
                 }
               }
 
+              if (type === "tool-getSubjectIdFromName") {
+                const { toolCallId, state } = part;
+
+                if (state === "input-available") {
+                  return <div key={toolCallId} className="skeleton" />;
+                }
+              }
+
+              if (type === "tool-getAllSubjectResources") {
+                const { toolCallId, state } = part;
+
+                if (state === "input-available") {
+                  return <div key={toolCallId} className="skeleton" />;
+                }
+              }
+
               if (type === "tool-getNotesFromSubjectId") {
                 const { toolCallId, state } = part;
 
