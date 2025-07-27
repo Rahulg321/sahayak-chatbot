@@ -38,8 +38,10 @@ import type { ChatMessage } from "@/lib/types";
 import type { ChatModel } from "@/lib/ai/models";
 import type { VisibilityType } from "@/components/visibility-selector";
 import { getUserGrades } from "@/lib/ai/tools/get-user-grades";
-import { getUserSubjects } from "@/lib/ai/tools/get-user-subjects";
 import { getResourcesInformation } from "@/lib/ai/tools/get-resources-information";
+import { getSubjectIdFromName } from "@/lib/ai/tools/getSubjectIdFromName";
+import { getUserSubjects } from "@/lib/ai/tools/get-user-subjects";
+import { getAllSubjectResources } from "@/lib/ai/tools/get-all-subject-resources";
 
 export const maxDuration = 60;
 
@@ -160,6 +162,9 @@ export async function POST(request: Request) {
           stopWhen: stepCountIs(5),
           experimental_activeTools: [
             "getUserGrades",
+            "getAllSubjectResources",
+            "getSubjectIdFromName",
+            "getUserSubjects",
             "getWeather",
             "createDocument",
             "updateDocument",
@@ -170,6 +175,8 @@ export async function POST(request: Request) {
           tools: {
             getWeather,
             getUserGrades,
+            getAllSubjectResources,
+            getSubjectIdFromName,
             getResourcesInformation,
             getUserSubjects,
             createDocument: createDocument({ session, dataStream }),

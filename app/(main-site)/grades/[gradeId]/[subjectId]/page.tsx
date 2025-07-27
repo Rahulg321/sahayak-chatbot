@@ -222,9 +222,14 @@ const page = async ({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <FileText className="mr-2 size-4" />
-                      <span>Add Text Note</span>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`/grades/${gradeId}/${subjectId}/text-note`}
+                        className="flex items-center"
+                      >
+                        <FileText className="mr-2 size-4" />
+                        <span>Add Text Note</span>
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href={`/grades/${gradeId}/${subjectId}/voice-note`}>

@@ -2,7 +2,7 @@ import { auth } from "@/app/(auth)/auth";
 import { db } from "@/lib/db/queries";
 import { subjects } from "@/lib/db/schema";
 import { tool } from "ai";
-import { eq } from "drizzle-orm";
+import { eq, ilike } from "drizzle-orm";
 import { z } from "zod";
 
 export const getSubjectIdFromName = tool({
@@ -26,7 +26,10 @@ export const getSubjectIdFromName = tool({
           id: subjects.id,
         })
         .from(subjects)
-        .where(eq(subjects.name, input.subjectName));
+        .where(
+          // Use a "contains" clause for case-insensitive partial match
+          ilike(subjects.name, `%${input.subjectName}%`)
+        );
 
       return subject;
     } catch (error) {

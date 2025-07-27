@@ -21,15 +21,11 @@ const ParticularNotePage = async ({
         <h2>Viewing Note</h2>
       </div>
 
-      {note.type === "voice" ? (
-        <TranscriptionPageClient
-          noteId={noteId}
-          gradeId={gradeId}
-          subjectId={subjectId}
-        />
-      ) : (
-        <div>Note is not a voice note</div>
-      )}
+      <TranscriptionPageClient
+        noteId={noteId}
+        gradeId={gradeId}
+        subjectId={subjectId}
+      />
     </div>
   );
 };
